@@ -1,34 +1,27 @@
 package bank;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
-
-import javax.jms.*;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 
 import Gateway.LoanBrokerGateway;
-import model.bank.*;
 import messaging.requestreply.RequestReply;
-import model.loan.LoanRequest;
+import model.bank.BankInterestReply;
+import model.bank.BankInterestRequest;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 
-public class JMSBankFrame extends JFrame  implements Observer {
+import javax.jms.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+public class JMSBankFrame2 extends JFrame  implements Observer {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -38,7 +31,7 @@ public class JMSBankFrame extends JFrame  implements Observer {
 	private JList<RequestReply<BankInterestRequest, BankInterestReply>> list;
 	private LoanBrokerGateway Gateway = new LoanBrokerGateway(this);
 
-	private String Name = "ABN AMRO";
+	private String Name = "RABO";
 
 	/**
 	 * Launch the application.
@@ -47,7 +40,7 @@ public class JMSBankFrame extends JFrame  implements Observer {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JMSBankFrame frame = new JMSBankFrame();
+					JMSBankFrame2 frame = new JMSBankFrame2();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -59,8 +52,8 @@ public class JMSBankFrame extends JFrame  implements Observer {
 	/**
 	 * Create the frame.
 	 */
-	public JMSBankFrame() {
-		setTitle("JMS Bank - ABN AMRO");
+	public JMSBankFrame2() {
+		setTitle("JMS Bank - " + Name);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();

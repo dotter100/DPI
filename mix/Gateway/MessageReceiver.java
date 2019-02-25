@@ -14,6 +14,7 @@ public class MessageReceiver extends Observable {
 
     public Object var;
     private Connection connection = null;
+    private Connection connTopic = null;
 
 
     public MessageReceiver(){
@@ -22,6 +23,8 @@ public class MessageReceiver extends Observable {
 
         try {
             connection = factory.createConnection("admin", "admin");
+            connTopic =  factory.createTopicConnection("admin", "admin");
+            connTopic.start();
             connection.start();
         } catch (JMSException e) {
             e.printStackTrace();

@@ -14,6 +14,7 @@ public class MessageSender {
 
 
     private Connection connectionBank = null;
+    private Connection connTopic = null;
     public Connection getConnectionBank() {
         return connectionBank;
     }
@@ -25,6 +26,8 @@ public class MessageSender {
         try {
             connectionBank = factory.createConnection("admin", "admin");
             connectionBank.start();
+            connTopic =  factory.createTopicConnection("admin", "admin");
+            connTopic.start();
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -42,6 +45,7 @@ public class MessageSender {
             connection.start();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             MessageProducer producer = session.createProducer(msg.getJMSReplyTo());
+
 
             //need to ask activemq to create a temporary queue to hold replies
             Destination replyDestination = session.createTemporaryQueue();
@@ -79,6 +83,7 @@ public class MessageSender {
 
             Session session = connectionBank.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
+
             Destination destination = new ActiveMQQueue(destinationstring);
             MessageProducer producer = session.createProducer(destination);
 
@@ -110,6 +115,5 @@ public class MessageSender {
             return null;
         }
     }
-
 
 }

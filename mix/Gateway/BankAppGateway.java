@@ -19,9 +19,9 @@ public class BankAppGateway {
         this.msgReceiver.addObserver(o);
     }
 
-    public void SendBankRequest(BankInterestRequest request,String CorrelationID) throws JMSException {
+    public void SendBankRequest(BankInterestRequest request,String CorrelationID, String bank) throws JMSException {
 
-        Message msg = msgSender.SendMessage(request, CorrelationID, "request-Intrestbank");
+        Message msg = msgSender.SendMessage(request, CorrelationID, bank);
         ReplyReceiver(msg.getJMSReplyTo());
 
     }

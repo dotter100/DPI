@@ -12,11 +12,13 @@ import javax.swing.border.EmptyBorder;
 
 import Gateway.BankAppGateway;
 import Gateway.LoanBrokerGateway;
+import javafx.util.Pair;
 import model.bank.*;
 import model.loan.LoanReply;
 import model.loan.LoanRequest;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
+import sun.applet.resources.MsgAppletViewer;
 
 
 public class LoanBrokerFrame extends JFrame implements Observer {
@@ -30,6 +32,9 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 	private JList<JListLine> list;
 	private List<Message> messages = new ArrayList<>();
 	private List<Message> messageclient = new ArrayList<>();
+	private List<String> banks = new ArrayList<>();
+
+	private List<Pair<LoanReply, String>> reply = new ArrayList<>();
 
 	private BankAppGateway BankGateway = null;
 	private LoanBrokerGateway Gateway = null;
@@ -50,6 +55,7 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 			}
 		});
 
+
 	}
 
 
@@ -58,7 +64,8 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 	 */
 	public LoanBrokerFrame() {
 
-
+		banks.add("ABN AMRO");
+		banks.add("RABO");
 		setTitle("Loan Broker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -220,7 +227,10 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 		BankInterestRequest Requestbank = new BankInterestRequest(request.getAmount(),request.getTime());
 
 		try {
-			BankGateway.SendBankRequest(Requestbank,CorrelationID);
+			for(String b : banks){
+				BankGateway.SendBankRequest(Requestbank,CorrelationID, b);
+			}
+
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -359,7 +369,22 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 				LoanReply loanreply = new LoanReply();
 				loanreply.setInterest(objmsg.getInterest());
 				loanreply.setQuoteID(objmsg.getQuoteId());
-				ReplyMessage(loanreply, GetClientMessage(MSG.getJMSCorrelationID()));
+
+				reply.add(new Pair<>(loanreply,MSG.getJMSCorrelationID()));
+
+				List<LoanReply> intrest = new ArrayList<>();
+				for(Pair<LoanReply, String> p : reply){
+					if(p.getValue().equals(MSG.getJMSCorrelationID())){
+						intrest.add(p.getKey());
+
+						if(intrest.size() == banks.size()){
+							LoanReply send = Collections.min(intrest,new IntrestCompare());
+							ReplyMessage(send, GetClientMessage(MSG.getJMSCorrelationID()));
+						}
+					}
+
+				}
+
 				//messageclient.add(MSG);
 			}else if(((ObjectMessage) MSG).getObject() instanceof LoanRequest) {
 
@@ -375,5 +400,15 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 			e.printStackTrace();
 		}
 
+	}
+
+
+}
+class IntrestCompare implements Comparator<LoanReply>{
+
+
+	@Override
+	public int compare(LoanReply o1, LoanReply o2) {
+		return Double.compare(o1.getInterest(),o2.getInterest());
 	}
 }
