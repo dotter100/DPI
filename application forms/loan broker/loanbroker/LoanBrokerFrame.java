@@ -66,6 +66,7 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 
 		banks.add("ABN AMRO");
 		banks.add("RABO");
+		banks.add("ING");
 		setTitle("Loan Broker");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -404,11 +405,5 @@ public class LoanBrokerFrame extends JFrame implements Observer {
 
 
 }
-class IntrestCompare implements Comparator<LoanReply>{
 
-
-	@Override
-	public int compare(LoanReply o1, LoanReply o2) {
-		return Double.compare(o1.getInterest(),o2.getInterest());
-	}
 }
